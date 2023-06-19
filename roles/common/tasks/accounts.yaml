@@ -1,0 +1,62 @@
+- name: Ensure user group exists
+  ansible.builtin.group:
+    name: "{{ item.key }}"
+  become: true
+  with_dict: "{{ extra_accounts }}"
+
+- name: Ensure additional group exists
+  ansible.builtin.group:
+    name: "{{ item }}"
+  become: true
+  with_items:
+    - sudo
+    - docker
+
+- name: Add accounts
+  ansible.builtin.user:
+    name: "{{ item.key }}"
+    state: present
+    groups: "{{ item.key }}, sudo, docker"
+    append: yes
+  become: true
+  with_dict: "{{ extra_accounts }}"
+
+- name: Check is zsh installed
+  shell: command -v /usr/bin/zsh >/dev/null 2>&1
+  register: is_zsh_exist
+  ignore_errors: yes
+
+- name: "Set ZSH for {{ item.key }}"
+  ansible.builtin.user:
+    name: "{{ item.key }}"
+    shell: /usr/bin/zsh
+  become: true
+  with_dict: "{{ extra_accounts }}"
+  when: is_zsh_exist.rc == 0
+
+- name: "Set BASH for {{ item.key }}"
+  ansible.builtin.user:
+    name: "{{ item.key }}"
+    shell: /bin/bash
+  become: true
+  with_dict: "{{ extra_accounts }}"
+  when: is_zsh_exist.rc != 0
+  
+
+- name: Create user ssh config dirs
+  ansible.builtin.file:
+    path: /home/{{ item.key }}/.ssh
+    state: "directory"
+    owner: "{{ item.key }}"
+    group: "{{ item.key }}"
+    mode: '0700'
+  with_dict: "{{ extra_accounts }}"
+
+- name: Install ssh pub keys
+  ansible.builtin.copy:
+    dest: "/home/{{ item.key }}/.ssh/authorized_keys"
+    content: "{{ item.value.authorized_keys }}"
+    owner: "{{ item.key }}"
+    group: "{{ item.key }}"
+    mode: '0600'
+  with_dict: "{{ extra_accounts }}"

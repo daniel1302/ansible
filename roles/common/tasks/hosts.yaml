@@ -1,0 +1,7 @@
+- name: Update hosts
+  ansible.builtin.lineinfile:
+    path: /etc/hosts
+    regexp: "{{ item.name }}$"
+    line: "{{ item.ip }}      {{ item.name }}"
+  become: true
+  with_items: "{{ extra_hosts }}"

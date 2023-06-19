@@ -1,0 +1,5 @@
+- name: Run playbooks for physical-servers
+  hosts: physical_servers
+  become: true
+  roles:
+    - common

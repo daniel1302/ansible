@@ -1,0 +1,12 @@
+---
+- name: Install required software
+  ansible.builtin.import_tasks: software.yaml
+  
+- name: Setup hosts
+  ansible.builtin.import_tasks: hosts.yaml
+  
+- name: Setup accounts
+  ansible.builtin.import_tasks: accounts.yaml
+
+- name: Setup SSHD
+  ansible.builtin.import_tasks: sshd.yaml

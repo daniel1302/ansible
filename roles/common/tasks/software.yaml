@@ -1,0 +1,15 @@
+- name: Install required software
+  ansible.builtin.apt:
+    pkg:
+      - sudo
+      - git
+      - wget
+      - curl
+  become: true
+
+- name: Ensure users can access sudo w/o pass
+  ansible.builtin.lineinfile:
+    path: /etc/sudoers
+    regexp: "[%]?sudo[\\s]+ALL"
+    line: "%sudo   ALL=(ALL:ALL) NOPASSWD:ALL"
+  become: true

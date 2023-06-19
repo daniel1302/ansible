@@ -1,0 +1,6 @@
+- name: Enable SSH server
+  ansible.builtin.systemd:
+    name: sshd
+    state: started
+    enabled: true
+  ignore_errors: true

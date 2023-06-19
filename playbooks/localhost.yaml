@@ -1,0 +1,5 @@
+- name: Run playbooks for localhost
+  hosts: localhost
+  become: true
+  roles:
+    - common

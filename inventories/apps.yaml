@@ -1,0 +1,15 @@
+---
+apps:
+  hosts:
+    guacamole:
+      ansible_host: 192.168.1.200
+    webapps:
+      ansible_host: 192.168.1.201
+    vega:
+      ansible_host: 192.168.1.202
+    sepolia_archival:
+      ansible_host: 192.168.1.203
+    postgresql:
+      ansible_host: 192.168.1.204
+    monitoring:
+      ansible_host: 192.168.1.205
