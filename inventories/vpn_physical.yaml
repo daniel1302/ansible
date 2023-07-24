@@ -1,5 +1,5 @@
 ---
-localhost:
+vpn_physical:
   hosts:
     cracow32.vpn:
       ansible_host: 10.8.0.38
