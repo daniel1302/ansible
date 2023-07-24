@@ -1,0 +1,17 @@
+---
+localhost:
+  hosts:
+    cracow32.vpn:
+      ansible_host: 10.8.0.38
+    cracow16.vpn:
+      ansible_host: 10.8.0.40
+    cracowrpi.vpn:
+      ansible_host: 10.8.0.41
+    prodeskg11.vpn:
+      ansible_host: 10.8.0.79
+    prodeskg10.vpn:
+      ansible_host: 10.8.0.78
+    prodeskg2.vpn:
+      ansible_host: 10.8.0.75
+    terminal.vpn:
+      ansible_host: 10.8.0.6
