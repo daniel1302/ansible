@@ -1,0 +1,5 @@
+- name: Run playbooks for vpn-physical-servers
+  hosts: vpn_physical
+  become: true
+  roles:
+    - common
