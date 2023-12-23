@@ -1,0 +1,14 @@
+- name: Run playbooks for nextcloud
+  hosts: nextcloud.local.mainnet.community
+  become: true
+  roles:
+    - role: common
+    - role: php
+    - role: certbot
+      vars:
+        cloudflare_api_token_env_name: MAINNET_COMMUNITY_CLOUDFLARE_API_TOKEN 
+        certbot_email_env_name: CERTBOT_EMAIL
+        certificate_domains:
+          - nextcloud.local.mainnet.community
+    - role: nginx
+    - role: nextcloud
