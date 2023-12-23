@@ -1,0 +1,9 @@
+- name: Run playbooks for postgresql
+  hosts: postgresql.local.mainnet.community
+  become: true
+  roles:
+    - role: common
+    - role: postgresql
+      vars:
+        db_users:
+          - nextcloud
