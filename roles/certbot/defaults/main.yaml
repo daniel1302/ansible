@@ -1,0 +1,2 @@
+cloudflare_api_token_env_name: MAINNET_CLOUDFLARE_API_TOKEN 
+certbot_email_env_name: CERTBOT_EMAIL

@@ -1,0 +1,53 @@
+---
+- name: Install Certbot Cloudflare
+  ansible.builtin.apt:
+    pkg:
+      - python3-certbot
+      - python3-certbot-dns-cloudflare
+
+- name: Check cloudflare api token
+  ansible.builtin.fail:
+    msg: "Set the {{cloudflare_api_token_env_name}} env variable" 
+  when: lookup('ansible.builtin.env', cloudflare_api_token_env_name) == ""
+
+- name: Check certbot email
+  ansible.builtin.fail:
+    msg: "Set the {{certbot_email_env_name}} env variable" 
+  when: lookup('ansible.builtin.env', certbot_email_env_name) == ""
+
+- name: Check certificate domains
+  ansible.builtin.fail:
+    msg: "Set the certificate_domains ansible variable variable" 
+  when: certificate_domains | length < 1
+
+- name: Create Certbot folder - /etc/letsencrypt
+  ansible.builtin.file:
+    path: /etc/letsencrypt
+    state: directory
+    owner: root
+    group: root
+    mode: 0700
+
+- name: Certbot Template
+  ansible.builtin.template:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    owner: root
+    group: root
+    mode: 0600
+  with_items:
+    - { src: 'etc/letsencrypt/dnscloudflare.ini.j2', dest: '/etc/letsencrypt/dnscloudflare.ini' }
+  vars:
+    cloudflare_api_token: "{{ lookup('ansible.builtin.env', cloudflare_api_token_env_name) }}"
+
+- name: Certbot | Generate Certificate
+  ansible.builtin.command: |
+    certbot certonly \
+      --non-interactive \
+      --agree-tos \
+      --dns-cloudflare \
+      --dns-cloudflare-credentials /etc/letsencrypt/dnscloudflare.ini \
+      -m {{ lookup('ansible.builtin.env', certbot_email_env_name) }} \
+      -d {{ certificate_domains | join(',') }}
+  args:
+    creates: /etc/letsencrypt/renewal/{{ certificate_domains[0] }}.conf
