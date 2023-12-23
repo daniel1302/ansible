@@ -5,11 +5,17 @@
       - git
       - wget
       - curl
-  become: true
+      - vim
+      - gnupg
+      - gnupg2
+      - gnupg1
+      - acl
+      - nfs-common
+      - unzip
+      - gzip
 
 - name: Ensure users can access sudo w/o pass
   ansible.builtin.lineinfile:
     path: /etc/sudoers
     regexp: "[%]?sudo[\\s]+ALL"
     line: "%sudo   ALL=(ALL:ALL) NOPASSWD:ALL"
-  become: true

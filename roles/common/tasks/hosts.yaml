@@ -3,5 +3,4 @@
     path: /etc/hosts
     regexp: "{{ item.name }}$"
     line: "{{ item.ip }}      {{ item.name }}"
-  become: true
-  with_items: "{{ extra_hosts }}"
+  with_items: "{{ extra_hosts | default([])}}"

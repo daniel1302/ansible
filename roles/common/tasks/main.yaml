@@ -10,3 +10,6 @@
 
 - name: Setup SSHD
   ansible.builtin.import_tasks: sshd.yaml
+
+- name: Setup Dasel
+  ansible.builtin.import_tasks: dasel.yaml
