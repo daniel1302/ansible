@@ -1,0 +1,21 @@
+- name: Run playbooks for transmission
+  hosts: transmission.local.mainnet.community
+  become: true
+  roles:
+    - role: common
+    - role: nfs-mount
+      vars:
+        src: truenas.local.mainnet.community:/mnt/local-zfs-1
+        path: /mnt/nas
+        owner: debian-transmission 
+        group: debian-transmission 
+    - role: certbot
+      vars:
+        cloudflare_api_token_env_name: MAINNET_COMMUNITY_CLOUDFLARE_API_TOKEN 
+        certbot_email_env_name: CERTBOT_EMAIL
+        certificate_domains:
+          - transmission.local.mainnet.community
+    - role: nginx
+    - role: transmission
+
+    

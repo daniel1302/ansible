@@ -1,0 +1,57 @@
+---
+# - name: Install prerequisites software
+#   ansible.builtin.apt:
+#     pkg:
+#       - gnupg
+#       - gnupg2
+#       - gnupg1
+#       - libxml2
+#       - ffmpeg
+
+- name: Add transmission repository
+  ansible.builtin.apt_repository:
+    repo: ppa:ubuntuhandbook1/transmission
+    state: present
+
+- name: Install Transmission
+  ansible.builtin.apt:
+    pkg:
+    - transmission-cli
+    - transmission-common
+    - transmission-daemon
+
+- name: Start transmission
+  ansible.builtin.service:
+    state: restarted
+    name: transmission-daemon
+    enabled: true
+
+- name: nginx config
+  ansible.builtin.template:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    owner: root
+    group: root
+    mode: 0600
+  with_items:
+    - src: 'etc/nginx/sites-enabled/01-transmission.local.mainnet.community.conf'
+      dest: '/etc/nginx/sites-enabled/01-transmission.local.mainnet.community.conf'
+
+- name: Start nginx
+  ansible.builtin.service:
+    state: restarted
+    name: nginx
+    enabled: true
+
+- name: Update transmission config
+  ansible.builtin.shell: |
+    dasel put -t "string" -v "000" -f /var/lib/transmission-daemon/info/settings.json -r json .umask
+    dasel put -t "string" -v "/mnt/nas/transmission/downloads" -f /var/lib/transmission-daemon/info/settings.json -r json .download-dir
+    dasel put -t "string" -v "/mnt/nas/transmission/Downloads" -f /var/lib/transmission-daemon/info/settings.json -r json .incomplete-dir
+  changed_when: false
+
+- name: Start transmission
+  ansible.builtin.service:
+    state: restarted
+    name: transmission-daemon
+    enabled: true
