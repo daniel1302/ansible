@@ -1,0 +1,24 @@
+---
+- name: Check that the /bin/dasel exists
+  ansible.builtin.stat:
+    path: "{{ path }}"
+  register: mount_result
+
+
+- name: Create mount directory
+  when: not mount_result.stat.exists
+  ansible.builtin.file:
+    path: "{{ path }}"
+    state: directory
+    mode: '0777'
+    owner: "{{ owner }}"
+    group: "{{ group }}"
+
+- name: Mount NFS volumes
+  ansible.posix.mount:
+    src: "{{ src }}"
+    path: "{{ path }}"
+    opts: rw,vers=3
+    boot: true
+    state: mounted
+    fstype: nfs
