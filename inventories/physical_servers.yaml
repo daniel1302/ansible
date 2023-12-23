@@ -31,7 +31,7 @@ physical_servers:
     # CPU: 4 x Intel(R) Core(TM) i5-4570T CPU @ 2.90GHz 
     # RAM: 16 GB
     # Disks:
-    #   - 120 GB SSD PNY_CS900_120GB SSD, R|W: 550 MB/s | 490 MB/s
+    #   - 500 GB SSD Samsung EVO 870, R|W: 560 MB/s | 530 MB/s
     prodeskg10:
       ansible_host: 192.168.1.78
 
@@ -48,6 +48,7 @@ physical_servers:
     # RAM: 16 GB
     # Disks:
     #   - 256GB NVME SK Hynix BC501 HFM256GDJTNG-8310A, R|W: 1300 MB/s | 860 MB/s
+    #   - 500 GB SSD Samsung EVO 870, R|W: 560 MB/s | 530 MB/s
     prodeskg2:
       ansible_host: 192.168.1.75
   
