@@ -1,0 +1,21 @@
+---
+- name: Config PostgreSQL | Create a new database
+  become: true
+  become_user: postgres
+  community.postgresql.postgresql_db:
+    name: "{{ item }}"
+    port: "5432"
+  register: create_db
+  with_items: "{{ db_users }}"
+
+- name: Config PostgreSQL | Ensure user has access to the new database
+  become: true
+  become_user: postgres
+  community.postgresql.postgresql_user:
+    port: "5432"
+    db: "{{ item }}"
+    name: "{{ item }}"
+    password: "{{ item }}"
+    priv: ALL
+    state: present
+  with_items: "{{ db_users }}"

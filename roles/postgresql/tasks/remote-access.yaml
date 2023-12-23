@@ -1,0 +1,24 @@
+---
+- name: Listen on all interfaces
+  ansible.builtin.lineinfile:
+    path: "/etc/{{- postgresql_version | replace('-','/') -}}/main/postgresql.conf"
+    regexp: '^#?/s*1listen_addresses'
+    line: listen_addresses = '*'
+    owner: postgres
+    group: postgres
+    mode: '0644'
+
+- name: Update pg_hba.conf
+  ansible.builtin.lineinfile:
+    path: "/etc/{{- postgresql_version | replace('-','/') -}}/main/pg_hba.conf"
+    regexp: '^host\s+all\s+all\s+127'
+    line: "host    all             all             0.0.0.0/0            scram-sha-256"
+    owner: postgres
+    group: postgres
+    mode: '0644'
+
+- name: Restart postgresql
+  ansible.builtin.service:
+    state: restarted
+    enabled: true
+    name: postgresql

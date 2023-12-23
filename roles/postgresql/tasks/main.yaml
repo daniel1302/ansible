@@ -1,0 +1,13 @@
+---
+- name: Install postgresql
+  ansible.builtin.import_tasks: postgresql.yaml
+  
+- name: Install timescaledb
+  ansible.builtin.import_tasks: timescale.yaml
+  
+- name: Allow remote access
+  ansible.builtin.import_tasks: remote-access.yaml
+  
+- name: Create dbs and users
+  ansible.builtin.import_tasks: users.yaml
+  

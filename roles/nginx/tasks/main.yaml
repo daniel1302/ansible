@@ -1,0 +1,38 @@
+# - name: Add an apt key by id from a keyserver
+#   ansible.builtin.apt_key:
+#     keyserver: keyserver.ubuntu.com
+#     id: 36A1D7869245C8950F966E92D8576A8BA88D21E9
+    
+# - name: Add nginx repo
+#   ansible.builtin.apt_repository:
+#     repo: deb https://nginx.org/packages/ubuntu/ jammy nginx
+#     state: present
+#     filename: nginx.list
+
+# - name: Add nginx src repo
+#   ansible.builtin.apt_repository:
+#     repo: deb-src https://nginx.org/packages/ubuntu/ jammy nginx
+#     state: present
+#     filename: nginx.list
+
+- name: Install nginx
+  ansible.builtin.apt:
+    pkg:
+      - nginx
+
+- name: Ensure group "www-data" exists
+  ansible.builtin.group:
+    name: www-data
+    state: present
+
+- name: allow to bind privileged ports for nginx
+  community.general.capabilities:
+    path: /usr/sbin/nginx
+    capability: CAP_NET_BIND_SERVICE+ep
+    state: present
+  
+- name: Start nginx
+  ansible.builtin.service:
+    state: started
+    enabled: true
+    name: nginx

@@ -1,0 +1,28 @@
+---
+- name: PostgreSQL | Install software
+  ansible.builtin.apt:
+    update_cache: true
+    pkg:
+      - python3-psycopg2
+
+# https://wiki.postgresql.org/wiki/Apt
+# https://stackoverflow.com/questions/71585303/how-can-i-manage-keyring-files-in-trusted-gpg-d-with-ansible-playbook-since-apt
+- name: PostgreSQL | Add apt repository GPG key
+  ansible.builtin.get_url:
+    url: https://www.postgresql.org/media/keys/ACCC4CF8.asc
+    dest: /etc/apt/keyrings/ACCC4CF8.asc
+    mode: '0644'
+    force: true
+
+- name: PostgreSQL | Add apt repository
+  ansible.builtin.apt_repository:
+    # repo: deb [arch=amd64 signed-by=/etc/apt/keyrings/ACCC4CF8.asc] http://apt.postgresql.org/pub/repos/apt {{ ansible_distribution_release }}-pgdg main
+    repo: deb [arch=amd64 signed-by=/etc/apt/keyrings/ACCC4CF8.asc] http://apt.postgresql.org/pub/repos/apt jammy-pgdg main
+    state: present
+    filename: pgdg.list
+
+- name: PostgreSQL | Install
+  ansible.builtin.apt:
+    update_cache: true
+    pkg:
+      - "{{ postgresql_version }}"

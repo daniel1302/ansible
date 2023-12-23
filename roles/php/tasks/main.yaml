@@ -1,0 +1,77 @@
+- name: Install prerequisites software
+  ansible.builtin.apt:
+    pkg:
+      - gnupg
+      - gnupg2
+      - gnupg1
+      - libxml2
+      - ffmpeg
+
+- name: Add php repository
+  ansible.builtin.apt_repository:
+    repo: ppa:ondrej/php
+    state: present
+
+
+- name: Install PHP
+  ansible.builtin.apt:
+    pkg:
+    - php8.2
+    - php8.2-cli
+    - php8.2-common
+    - php8.2-opcache
+    - php8.2-curl
+    - php8.2-ctype
+    - php8.2-dom
+    - php8.2-fileinfo
+    - php8.2-gd
+    - php8.2-mbstring
+    - php8.2-posix
+    - php8.2-simplexml
+    - php8.2-xmlreader
+    - php8.2-xmlwriter
+    - php8.2-zip
+    - php8.2-pdo
+    - php8.2-bz2
+    - php8.2-intl
+    - php8.2-ldap
+    - php8.2-smbclient
+    - php8.2-ftp
+    - php8.2-imap
+    - php8.2-bcmath
+    - php8.2-gmp
+    - php8.2-exif
+    - php8.2-apcu
+    - php8.2-memcached
+    - php8.2-redis
+    - php8.2-imagick
+    - php8.2-xml
+    - php8.2-fpm
+    - php8.2-pgsql
+    - php8.2-mysql
+    - php8.2-sqlite3
+    - php8.2-imagick
+
+# do not use apache2
+- name: Stop service apache2, if started
+  ansible.builtin.service:
+    name: apache2
+    state: stopped
+    enabled: false
+  ignore_errors: true
+
+- name: Update php config directives
+  ansible.builtin.lineinfile:
+    path: "/etc/php/8.2/fpm/php.ini"
+    regexp: ';?\s*{{ item.key }}'
+    line: "{{ item.key }} = {{ item.value }}"
+  loop:
+    - key: "memory_limit"
+      value: 3096M
+    - key: "max_input_time"
+      value: 900
+
+- name: Start php-fpm
+  ansible.builtin.service:
+    state: restarted
+    name: php8.2-fpm
