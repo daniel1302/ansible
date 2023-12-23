@@ -1,5 +1,0 @@
-- name: Run playbooks for apps
-  hosts: apps
-  become: true
-  roles:
-    - common
