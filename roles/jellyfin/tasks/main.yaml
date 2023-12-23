@@ -1,0 +1,34 @@
+- name: Install prerequisites software
+  ansible.builtin.apt:
+    pkg:
+      - gnupg
+      - gnupg2
+      - gnupg1
+      - libxml2
+      - ffmpeg
+      - unzip
+
+- name: nginx config
+  ansible.builtin.template:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    owner: root
+    group: root
+    mode: 0600
+  with_items:
+    - src: 'etc/nginx/sites-enabled/01-jellyfin.local.mainnet.community.conf'
+      dest: '/etc/nginx/sites-enabled/01-jellyfin.local.mainnet.community.conf'
+
+- name: Restart nginx
+  ansible.builtin.service:
+    state: restarted
+    name: nginx
+    enabled: true
+
+- name: Create Certbot folder - /etc/letsencrypt
+  ansible.builtin.file:
+    path: /var/cache/nginx/jellyfin
+    state: directory
+    owner: www-data
+    group: www-data
+    mode: 0700

@@ -1,0 +1,19 @@
+- name: Run playbooks for nextcloud
+  hosts: jellyfin.local.mainnet.community
+  become: true
+  roles:
+    - role: common
+    - role: nfs-mount
+      vars:
+        src: truenas.local.mainnet.community:/mnt/local-zfs-1
+        path: /mnt/nas
+        owner: root
+        group: root
+    - role: certbot
+      vars:
+        cloudflare_api_token_env_name: MAINNET_COMMUNITY_CLOUDFLARE_API_TOKEN 
+        certbot_email_env_name: CERTBOT_EMAIL
+        certificate_domains:
+          - jellyfin.local.mainnet.community
+    - role: nginx
+    - role: jellyfin
