@@ -1,0 +1,23 @@
+[Unit]
+Description=Prometheus
+Documentation=https://prometheus.io
+After=network.target network-online.target
+Requires=network-online.target
+
+[Service]
+User=prometheus
+Group=prometheus
+ExecStart=/home/prometheus/prometheus_home/prometheus \
+    --web.listen-address "0.0.0.0:9090" \
+    --config.file "/home/prometheus/prometheus_home/prometheus.yaml" \
+    --storage.tsdb.retention.size "{{- prometheus_data_retention_size -}}" \
+    --storage.tsdb.path "/home/prometheus/prometheus_home/data" \
+    --enable-feature=remote-write-receiver
+
+TimeoutStopSec=5s
+PrivateTmp=false
+ProtectSystem=full
+AmbientCapabilities=CAP_NET_BIND_SERVICE
+
+[Install]
+WantedBy=multi-user.target

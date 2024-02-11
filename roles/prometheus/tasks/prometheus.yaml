@@ -1,0 +1,83 @@
+---
+- name: Ensure group "prometheus" exists
+  ansible.builtin.group:
+    name: prometheus
+    state: present
+
+- name: Add the 'prometheus' user
+  ansible.builtin.user:
+    name: prometheus
+    shell: /bin/bash
+    groups: prometheus, sudo
+
+- name: Create required file system
+  ansible.builtin.file:
+    path: "{{- item -}}"
+    state: directory
+    mode: '0755'
+    owner: prometheus
+    group: prometheus
+  with_items:
+    - /home/prometheus/prometheus_home
+
+- name: Change owner of the data mount
+  ansible.builtin.file:
+    path: "{{- prometheus_data_mount -}}/data"
+    state: directory
+    mode: '0755'
+    owner: prometheus
+    group: prometheus
+
+- name: Create a symbolic link for the prometheus data
+  ansible.builtin.file:
+    src: "{{- prometheus_data_mount -}}/data"
+    dest: "/home/prometheus/prometheus_home/data"
+    owner: prometheus
+    group: prometheus
+    state: link   
+
+- name: Download prometheus
+  ansible.builtin.get_url:
+    url: "https://github.com/prometheus/prometheus/releases/download/v{{- prometheus_version -}}/prometheus-{{- prometheus_version -}}.linux-amd64.tar.gz"
+    dest: &promdest /tmp/prometheus.tar.gz
+    mode: '0600'
+
+- name: Unpack Prometheus
+  ansible.builtin.unarchive:
+    src: *promdest
+    remote_src: true
+    dest: /tmp
+
+- name: Copy prometheus binary
+  ansible.builtin.copy:
+    remote_src: true
+    src: "/tmp/prometheus-{{- prometheus_version -}}.linux-amd64/prometheus"
+    dest: /home/prometheus/prometheus_home/prometheus
+    owner: prometheus
+    group: prometheus
+    mode: '0755'
+
+- name: Copy prometheus config
+  ansible.builtin.template:
+    src: home/prometheus/prometheus_home/prometheus.yaml.j2
+    dest: /home/prometheus/prometheus_home/prometheus.yaml
+    owner: prometheus
+    group: prometheus
+    mode: '0644'
+  register: prom_config
+
+- name: Copy service file
+  ansible.builtin.template:
+    src: lib/systemd/system/prometheus.service.j2
+    dest: /lib/systemd/system/prometheus.service
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Start prometheus
+  ansible.builtin.systemd:
+    name: prometheus
+    state: restarted
+    enabled: true
+    daemon_reload: true
+  when: not ansible_check_mode and prom_config.changed

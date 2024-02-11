@@ -1,0 +1,20 @@
+[Unit]
+Description=Pushgateway
+Documentation=https://prometheus.io
+After=network.target network-online.target
+Requires=network-online.target
+
+[Service]
+User=prometheus
+Group=prometheus
+ExecStart=/home/prometheus/prometheus_home/pushgateway \
+    --web.listen-address "0.0.0.0:9091" \
+    --persistence.file "/home/prometheus/prometheus_home/pushgateway_data/persistance.tmp"
+
+TimeoutStopSec=5s
+PrivateTmp=false
+ProtectSystem=full
+AmbientCapabilities=CAP_NET_BIND_SERVICE
+
+[Install]
+WantedBy=multi-user.target

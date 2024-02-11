@@ -1,0 +1,52 @@
+---
+- name: Download pushgateway
+  ansible.builtin.get_url:
+    url: "https://github.com/prometheus/pushgateway/releases/download/v{{- prometheus_pushgateway_version -}}/pushgateway-{{- prometheus_pushgateway_version -}}.linux-amd64.tar.gz"
+    dest: &pushgatewaydest /tmp/pushgateway.tar.gz
+    mode: '0600'
+
+- name: Unpack pushgateway
+  ansible.builtin.unarchive:
+    src: *pushgatewaydest
+    remote_src: true
+    dest: /tmp
+
+- name: Copy prometheus binary
+  ansible.builtin.copy:
+    remote_src: true
+    src: "/tmp/pushgateway-{{- prometheus_pushgateway_version -}}.linux-amd64/pushgateway"
+    dest: /home/prometheus/prometheus_home/pushgateway
+    owner: prometheus
+    group: prometheus
+    mode: '0755'
+
+- name: Change owner of the data mount
+  ansible.builtin.file:
+    path: "{{- prometheus_data_mount -}}/pushgateway"
+    state: directory
+    mode: '0755'
+    owner: prometheus
+    group: prometheus
+
+- name: Create a symbolic link for the pushgateway data
+  ansible.builtin.file:
+    src: "{{- prometheus_data_mount -}}/pushgateway"
+    dest: "/home/prometheus/prometheus_home/pushgateway_data"
+    owner: prometheus
+    group: prometheus
+    state: link
+
+- name: Copy service file
+  ansible.builtin.template:
+    src: lib/systemd/system/pushgateway.service.j2
+    dest: /lib/systemd/system/pushgateway.service
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Start pushgateway
+  ansible.builtin.systemd:
+    name: pushgateway
+    state: started
+    enabled: true
+    daemon_reload: true

@@ -1,0 +1,7 @@
+---
+- name: Install prometheus
+  ansible.builtin.import_tasks: prometheus.yaml
+  
+- name: Install pushgateway
+  ansible.builtin.import_tasks: pushgateway.yaml
+  
