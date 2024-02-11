@@ -3,4 +3,16 @@
   become: true
   roles:
     - role: common
+    - role: nginx    
+    - role: certbot
+      vars:
+        cloudflare_api_token_env_name: MAINNET_COMMUNITY_CLOUDFLARE_API_TOKEN 
+        certbot_email_env_name: CERTBOT_EMAIL
+        certificate_domains:
+          - prometheus.local.mainnet.community
+          - pushgateway.local.mainnet.community
     - role: prometheus
+      vars:
+        prometheus_domain: prometheus.local.mainnet.community
+        prometheus_pushgateway_domain: pushgateway.local.mainnet.community
+        prometheus_install_nginx_config: true

@@ -2,3 +2,8 @@ prometheus_version: 2.49.1
 prometheus_pushgateway_version: 1.7.0
 prometheus_data_mount: /mnt/prometheus
 prometheus_data_retention_size: "1TB"
+
+# front-proxy
+prometheus_install_nginx_config: false
+prometheus_domain: prometheus.local.mainnet.community
+prometheus_pushgateway_domain: pushgateway.local.mainnet.community

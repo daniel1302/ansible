@@ -4,4 +4,7 @@
   
 - name: Install pushgateway
   ansible.builtin.import_tasks: pushgateway.yaml
+
+- name: Install frontproxy
+  ansible.builtin.import_tasks: front-proxy.yaml
   

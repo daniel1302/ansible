@@ -1,0 +1,20 @@
+---
+- name: Setup front proxy
+  when: prometheus_install_nginx_config
+  block:
+    - name: nginx config
+      ansible.builtin.template:
+        src: "{{ item.src }}"
+        dest: "{{ item.dest }}"
+        owner: root
+        group: root
+        mode: 0600
+      with_items:
+        - src: 'etc/nginx/sites-enabled/01-prometheus.local.mainnet.community.conf'
+          dest: '/etc/nginx/sites-enabled/01-prometheus.local.mainnet.community.conf'
+
+    - name: Restart nginx
+      ansible.builtin.service:
+        state: restarted
+        name: nginx
+        enabled: true
