@@ -1,0 +1,8 @@
+- name: Run playbooks for grafana
+  hosts: grafana.local.mainnet.community
+  become: true
+  roles:
+    - role: common
+    - role: grafana-server
+      vars:
+        grafana_srv_install: true

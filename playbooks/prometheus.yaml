@@ -1,0 +1,6 @@
+- name: Run playbooks for grafana
+  hosts: prometheus.local.mainnet.community
+  become: true
+  roles:
+    - role: common
+    - role: prometheus

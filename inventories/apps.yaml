@@ -5,3 +5,6 @@ apps:
     postgresql.local.mainnet.community:
     transmission.local.mainnet.community:
     jellyfin.local.mainnet.community:
+
+    grafana.local.mainnet.community:
+    prometheus.local.mainnet.community:
