@@ -1,0 +1,5 @@
+grafana_srv_version: 10.2.2
+grafana_srv_install: false
+
+grafana_plugins:
+  - grafana-sentry-datasource

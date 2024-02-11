@@ -1,0 +1,47 @@
+---
+- name: Grafana Server | Setup grafana-server
+  when: grafana_srv_install | default(false)
+  block:
+  - name: Install required software
+    ansible.builtin.apt:
+      pkg:
+        - adduser
+        - libfontconfig1
+
+  - name: Grafana Server | Install grafana-server
+    ansible.builtin.apt:
+      deb: "https://dl.grafana.com/oss/release/grafana_{{- grafana_srv_version -}}_amd64.deb"
+      state: present
+      allow_downgrade: true
+      allow_change_held_packages: true
+    register: grafana_install
+
+  - name: Ensure grafana plugins dir exists
+    ansible.builtin.file:
+      path: /var/lib/grafana/plugins
+      state: directory
+      owner: "grafana"
+      group: "grafana"
+      mode: "0755"
+
+  - name: Install grafana plugins
+    ansible.builtin.command: "/usr/sbin/grafana-cli plugins install {{ item }}"
+    changed_when: false
+    with_items: "{{ grafana_plugins }}"
+
+  - name: Grafana Server | Template a grafana-server config
+    ansible.builtin.template:
+      src: etc/grafana/grafana.ini.j2
+      dest: /etc/grafana/grafana.ini
+      owner: grafana
+      group: grafana
+      mode: '0644'
+    register: grafana_config_tmpl
+
+  - name: Grafana Server | Restart the grafana service when required
+    ansible.builtin.systemd:
+      state: restarted
+      enabled: true
+      daemon_reload: true
+      name: grafana-server
+    when: not ansible_check_mode and (grafana_config_tmpl.changed or grafana_install.changed)
