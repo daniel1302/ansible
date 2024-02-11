@@ -3,6 +3,15 @@
   become: true
   roles:
     - role: common
+    - role: nginx    
+    - role: certbot
+      vars:
+        cloudflare_api_token_env_name: MAINNET_COMMUNITY_CLOUDFLARE_API_TOKEN 
+        certbot_email_env_name: CERTBOT_EMAIL
+        certificate_domains:
+          - grafana.local.mainnet.community
     - role: grafana-server
       vars:
         grafana_srv_install: true
+        grafana_install_nginx_config: true
+        grafana_domain: grafana.local.mainnet.community

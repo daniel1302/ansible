@@ -45,3 +45,23 @@
       daemon_reload: true
       name: grafana-server
     when: not ansible_check_mode and (grafana_config_tmpl.changed or grafana_install.changed)
+
+- name: Setup front proxy
+  when: grafana_install_nginx_config
+  block:
+    - name: nginx config
+      ansible.builtin.template:
+        src: "{{ item.src }}"
+        dest: "{{ item.dest }}"
+        owner: root
+        group: root
+        mode: 0600
+      with_items:
+        - src: 'etc/nginx/sites-enabled/01-grafana.local.mainnet.community.conf'
+          dest: '/etc/nginx/sites-enabled/01-grafana.local.mainnet.community.conf'
+
+    - name: Restart nginx
+      ansible.builtin.service:
+        state: restarted
+        name: nginx
+        enabled: true

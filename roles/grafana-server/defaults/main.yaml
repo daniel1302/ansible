@@ -1,5 +1,7 @@
 grafana_srv_version: 10.2.2
 grafana_srv_install: false
 
+grafana_install_nginx_config: false
+grafana_domain: grafana.local.mainnet.community
 grafana_plugins:
   - grafana-sentry-datasource
