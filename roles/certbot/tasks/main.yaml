@@ -51,3 +51,10 @@
       -d {{ certificate_domains | join(',') }}
   args:
     creates: /etc/letsencrypt/renewal/{{ certificate_domains[0] }}.conf
+
+- name: Certbot | Weekly renew certificate
+  ansible.builtin.cron:
+    name: "A job for renew certificate"
+    special_time: weekly
+    user: root
+    job: "certbot renew --agree-tos >> /var/log/cert-renewal.log"
