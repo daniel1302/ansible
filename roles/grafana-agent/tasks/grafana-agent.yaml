@@ -1,0 +1,52 @@
+---
+- name: Grafana Agent | Install grafana-agent
+  ansible.builtin.apt:
+    deb: "https://github.com/grafana/agent/releases/download/v{{- grafana_agent_version -}}/grafana-agent-{{- grafana_agent_version -}}-1.amd64.deb"
+
+
+- name: Grafana Agent | Create grafana-agent configs dir
+  ansible.builtin.file:
+    path: /etc/grafana-agent.d
+    state: directory
+    mode: "0755"
+
+# - name: Grafana Agent | Copy additional grafana config
+#   ansible.builtin.template:
+#     src: "etc/grafana-agent.d/{{ item }}.j2"
+#     dest: "/etc/grafana-agent.d/{{ item }}"
+#     owner: root
+#     group: root
+#     mode: "0644"
+#   with_items:
+#     - postgres-exporter.yaml
+#   when: not ansible_check_mode
+
+- name: Grafana Agent | Agent config
+  ansible.builtin.template:
+    src: "etc/{{ grafana_agent_config_file }}"
+    dest: /etc/grafana-agent.yaml
+    owner: root
+    group: root
+    mode: "0644"
+  when: not ansible_check_mode
+
+- name: Grafana Agent | Update CUSTOM_ARGS environment variables for grafana config
+  ansible.builtin.lineinfile:
+    path: /etc/default/grafana-agent
+    regexp: "^CUSTOM_ARGS="
+    line: "CUSTOM_ARGS={{- (['-config.expand-env'] + grafana_agent_extra_custom_args|list) | join(' ') }}"
+  when: not ansible_check_mode
+
+- name: Grafana Agent | Ensure agent is running as root
+  ansible.builtin.lineinfile:
+    path: /usr/lib/systemd/system/grafana-agent.service
+    regexp: "^User="
+    line: User=root
+  when: not ansible_check_mode
+
+- name: Grafana Agent | Start grafana-agent
+  ansible.builtin.service:
+    state: restarted
+    name: grafana-agent
+    enabled: true
+  when: not ansible_check_mode

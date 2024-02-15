@@ -1,0 +1,5 @@
+grafana_agent_version: 0.39.2
+grafana_agent_config_file: grafana-agent-common.yaml
+grafana_agent_extra_custom_args: []
+grafana_agent_with_smartmonitor: false
+

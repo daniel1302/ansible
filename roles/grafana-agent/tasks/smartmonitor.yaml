@@ -1,0 +1,24 @@
+---
+# docs: https://github.com/reefland/smartmon_nvme
+- name: "Setup smart monitor process"
+  when: grafana_agent_with_smartmonitor
+  block:
+    - name: Install required software
+      ansible.builtin.apt:
+        pkg:
+          - smartmontools
+          - moreutils
+
+    - name: Copy smartmon binary
+      ansible.builtin.copy:
+        src: "usr/local/bin/smartmon.sh"
+        dest: /usr/local/bin/smartmon.sh
+        owner: root
+        group: root
+        mode: '0755'
+
+    - name: Generate smartmon.sh metrics
+      ansible.builtin.cron:
+        name: "generate smart metrics"
+        minute: "*/5"
+        job: "bash -c '/usr/local/bin/smartmon.sh | /usr/bin/sponge /var/lib/node_exporter/textfile_collector/smartmon.prom' >> /var/log/smartmon.log 2>&1"

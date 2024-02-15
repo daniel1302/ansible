@@ -1,0 +1,9 @@
+---
+- name: Common
+  ansible.builtin.import_tasks: common.yaml
+
+- name: Setup grafana-agent
+  ansible.builtin.import_tasks: grafana-agent.yaml
+
+- name: Setup Smart monitor
+  ansible.builtin.import_tasks: smartmonitor.yaml

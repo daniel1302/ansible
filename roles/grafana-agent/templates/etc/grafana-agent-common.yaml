@@ -1,0 +1,54 @@
+# Sample config for Grafana Agent
+# For a full configuration reference, see: https://grafana.com/docs/agent/latest/configuration/.
+server:
+  log_level: warn
+
+metrics:
+  global:
+    scrape_interval: 1m
+    remote_write:
+      - url: http://prometheus.local.mainnet.community:9090/api/v1/write
+        write_relabel_configs:
+          - action: replace
+            replacement: '${HOSTNAME}'
+            target_label: instance
+
+
+  wal_directory: '/var/lib/grafana-agent'
+  configs:
+    - name: agent
+      scrape_configs:
+        - job_name: consensus
+          scrape_interval: 15s
+          metrics_path: '/metrics'
+          static_configs:
+            - targets: ['127.0.0.1:5054']
+        - job_name: execution
+          scrape_interval: 15s
+          metrics_path: '/debug/metrics/prometheus'
+          static_configs:
+            - targets: ['127.0.0.1:6060']
+
+    # Example Prometheus scrape configuration to scrape the agent itself for metrics.
+    # This is not needed if the agent integration is enabled.
+    # - name: agent
+    #   host_filter: false
+    #   scrape_configs:
+    #     - job_name: agent
+    #       static_configs:
+    #         - targets: ['127.0.0.1:9090']
+
+integrations:
+  agent:
+    enabled: true
+  node_exporter:
+    enabled: true
+    include_exporter_metrics: true
+    textfile_directory: "/var/lib/node_exporter/textfile_collector"
+    disable_collectors:
+      - "mdadm"
+    metric_relabel_configs:
+      - source_labels: [instance]
+        regex: "([^:]+):.+"
+        target_label: "instance"
+        replacement: "$1"
