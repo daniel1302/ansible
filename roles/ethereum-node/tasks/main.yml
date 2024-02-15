@@ -1,0 +1,9 @@
+---
+- name: Configure system
+  ansible.builtin.import_tasks: system.yaml
+
+- name: Install binaries
+  ansible.builtin.import_tasks: binaries.yaml
+
+- name: Configure systemd
+  ansible.builtin.import_tasks: systemd.yaml

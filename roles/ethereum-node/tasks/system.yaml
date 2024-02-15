@@ -1,0 +1,100 @@
+---
+- name: Add the 'ethereum' user
+  ansible.builtin.group:
+    name: ethereum
+    state: present
+
+- name: Add the 'ethereum' user
+  ansible.builtin.user:
+    name: ethereum
+    shell: /bin/bash
+    groups: ethereum, sudo
+
+- name: Check if rules file exists
+  stat: 
+    path: /mnt/ethereum
+  register: mnt_ethereum_exists
+
+- name: Mount the /mnt/ethereum
+  when: mnt_ethereum_exists.stat.exists == false and ethereum_mount_disk | length > 0
+  block:
+    - name: "Create a ext4 filesystem on {{- ethereum_mount_disk -}}"
+      community.general.filesystem:
+        fstype: ext4
+        dev: "{{- ethereum_mount_disk -}}"
+        force: true
+
+    - name: "Mount disk to /mnt/ethereum"
+      ansible.posix.mount:
+        path: "/mnt/ethereum"
+        src: "{{- ethereum_mount_disk -}}"
+        fstype: ext4
+        opts: defaults,noatime
+        boot: true
+        state: mounted
+    
+    - name: Create directory on the mounted file system
+      ansible.builtin.file:
+        path: "/mnt/ethereum/ethereum"
+        state: directory
+        mode: '0755'
+        owner: ethereum
+        group: ethereum
+    
+    - name: Create a symbolic link for the prometheus data
+      ansible.builtin.file:
+        src: "/mnt/ethereum/ethereum"
+        dest: "/home/ethereum/ethereum"
+        owner: ethereum
+        group: ethereum
+        state: link
+
+- name: Use external folder
+  when: ethereum_external_folder | length > 0
+  block:
+    - name: Create directory on the mounted file system
+      ansible.builtin.file:
+        path: "{{- ethereum_external_folder -}}/ethereum"
+        state: directory
+        mode: '0755'
+        owner: ethereum
+        group: ethereum
+    
+    - name: Create a symbolic link for the prometheus data
+      ansible.builtin.file:
+        src: "{{- ethereum_external_folder -}}/ethereum"
+        dest: "/home/ethereum/ethereum"
+        owner: ethereum
+        group: ethereum
+        state: link
+
+
+- name: Create directory on the mounted file system
+  ansible.builtin.file:
+    path: "/home/ethereum/ethereum"
+    state: directory
+    mode: '0755'
+    owner: ethereum
+    group: ethereum
+  when:  ethereum_mount_disk | length == 0 and ethereum_external_folder | length == 0
+
+
+- name: Create required file system
+  ansible.builtin.file:
+    path: "{{- item -}}"
+    state: directory
+    mode: '0755'
+    owner: ethereum
+    group: ethereum
+  with_items:
+    - /home/ethereum/ethereum/jwtsecret
+    - /home/ethereum/ethereum/execution
+    - /home/ethereum/ethereum/consensus
+    - /home/ethereum/ethereum/consensus/data
+    - /home/ethereum/ethereum/consensus/keystores
+    - /home/ethereum/ethereum/consensus/validators
+
+- name: Generate jwt token
+  shell: 'openssl rand -hex 32 | tr -d "\n" > /home/ethereum/ethereum/jwtsecret/jwt.hex'
+  args:
+    creates: /home/ethereum/ethereum/jwtsecret/jwt.hex

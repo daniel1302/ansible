@@ -1,0 +1,42 @@
+---
+- name: Download erigon
+  ansible.builtin.get_url:
+    url: "https://github.com/ledgerwatch/erigon/releases/download/v{{- ethereum_erigon_version -}}/erigon_{{- ethereum_erigon_version -}}_linux_amd64.tar.gz"
+    dest: &erigondest /tmp/erigon.tar.gz
+    mode: '0600'
+
+- name: Unpack erigon
+  ansible.builtin.unarchive:
+    src: *erigondest
+    remote_src: true
+    dest: /tmp
+
+- name: Copy erigon binary
+  ansible.builtin.copy:
+    remote_src: true
+    src: "/tmp/erigon"
+    dest: /home/ethereum/ethereum/execution/
+    owner: ethereum
+    group: ethereum
+    mode: '0755'
+
+- name: Download lighthouse
+  ansible.builtin.get_url:
+    url: "https://github.com/sigp/lighthouse/releases/download/v{{- ethereum_lighthouse_version -}}/lighthouse-v{{- ethereum_lighthouse_version -}}-x86_64-unknown-linux-gnu-portable.tar.gz"
+    dest: &lighthousedest /tmp/lighthouse.tar.gz
+    mode: '0600'
+
+- name: Unpack lighthouse
+  ansible.builtin.unarchive:
+    src: *lighthousedest
+    remote_src: true
+    dest: /tmp
+
+- name: Copy lighthouse binary
+  ansible.builtin.copy:
+    remote_src: true
+    src: "/tmp/lighthouse"
+    dest: /home/ethereum/ethereum/consensus/
+    owner: ethereum
+    group: ethereum
+    mode: '0755'

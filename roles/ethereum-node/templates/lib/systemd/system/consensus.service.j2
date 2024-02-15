@@ -1,0 +1,29 @@
+[Unit]
+Description=consensus engine
+After=network.target network-online.target
+Requires=network-online.target
+
+[Service]
+User=ethereum
+Group=ethereum
+ExecStart=/home/ethereum/ethereum/consensus/lighthouse beacon_node \
+      --network={{- ethereum_chain_name }} \
+      --datadir=/home/ethereum/ethereum/consensus/data \
+      --port=9000 \
+      --http \
+      --metrics \
+      --http-address=0.0.0.0 \
+      --http-port=4000 \
+      --execution-endpoint=http://localhost:8551 \
+      --execution-jwt=/home/ethereum/ethereum/jwtsecret/jwt.hex \
+      --checkpoint-sync-url {{ ethereum_lighthouse_checkpoint_url }} {{ ethereum_additional_lighthouse_params }}
+
+TimeoutStopSec=120s
+LimitNOFILE=1048576
+LimitNPROC=512
+PrivateTmp=false
+ProtectSystem=full
+AmbientCapabilities=CAP_NET_BIND_SERVICE
+
+[Install]
+WantedBy=multi-user.target

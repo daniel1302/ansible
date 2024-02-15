@@ -1,0 +1,27 @@
+[Unit]
+Description=execution engine
+After=network.target network-online.target
+Requires=network-online.target
+
+[Service]
+User=ethereum
+Group=ethereum
+ExecStart=/home/ethereum/ethereum/execution/erigon \
+                  --chain={{- ethereum_chain_name }} \
+                  --http \
+                  --http.api=eth,debug,net,trace,web3,erigon \
+                  --ws \
+                  --metrics \
+                  --metrics.addr=0.0.0.0 \
+                  --datadir=/home/ethereum/ethereum/execution/data \
+                  --authrpc.jwtsecret=/home/ethereum/ethereum/jwtsecret/jwt.hex \
+
+TimeoutStopSec=120s
+LimitNOFILE=1048576
+LimitNPROC=512
+PrivateTmp=false
+ProtectSystem=full
+AmbientCapabilities=CAP_NET_BIND_SERVICE
+
+[Install]
+WantedBy=multi-user.target
