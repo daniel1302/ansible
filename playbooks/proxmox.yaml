@@ -1,0 +1,6 @@
+- name: Run playbooks for proxmox
+  hosts: proxmox
+  become: true
+  roles:
+    - common
+    - grafana-agent

@@ -1,0 +1,7 @@
+- name: Run playbooks for ethereum
+  hosts: ethereum
+  become: true
+  roles:
+    - role: common
+    - role: ethereum-node
+    - role: grafana-agent

@@ -6,4 +6,5 @@
     - role: postgresql
       vars:
         db_users:
-          - nextcloud
+          - vega
+    - role: grafana-agent
