@@ -1,0 +1,9 @@
+---
+proxmox:
+  hosts:
+    io.pve.mainnet.community:
+    callisto.pve.mainnet.community:
+    phobos.pve.mainnet.community:    
+    deimos.pve.mainnet.community:
+  vars:
+    grafana_agent_with_smartmonitor: true
