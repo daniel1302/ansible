@@ -31,4 +31,4 @@
   ansible.builtin.service:
     state: started
     enabled: true
-    name: postgresql
+    name: postgresql@14-main

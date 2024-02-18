@@ -1,0 +1,43 @@
+---      
+- name: Configure | Custom configuration changes to postgresql.conf
+  ansible.builtin.lineinfile:
+    path: "/etc/postgresql/14/main/postgresql.conf"
+    regexp: "^#?{{ item.key }} =.*"
+    line: "{{ item.key }} = {{ item.value }}"
+  with_dict:
+    - shared_preload_libraries: "'timescaledb'"
+    - timescaledb.telemetry_level: "off"
+    - restart_after_crash: "off"
+    - data_directory: "'{{ external_postgresql_home if postgresql_external_data_directory != '' else '/var/lib/postgresql/14/main' }}'"
+    # Tunning for OOM issues
+    # - max_connections: "50"
+    # - work_mem: "5MB"
+    # - temp_buffers: "5MB"
+    # - huge_pages: "off" # May increase CPU time spent on memory management, decrease performance, ref: https://postgresqlco.nf/doc/en/param/huge_pages/
+    # - shared_memory_type: "sysv"
+    # - dynamic_shared_memory_type: "sysv"
+    # https://www.postgresql.org/docs/current/runtime-config-logging.html
+    - log_rotation_age: 7d
+    - log_rotation_size: 1024MB
+    - log_min_duration_statement: "60s"
+    # max_lock_per_transaction needs to be bigger when there is more partitions. 
+    # It is how the TimescaleDB works, so we need to increase it.
+    # https://www.cybertec-postgresql.com/en/postgresql-you-might-need-to-increase-max_locks_per_transaction/
+    - max_locks_per_transaction: 256
+  vars:
+    external_postgresql_home: "{{- postgresql_external_data_directory -}}/main"
+
+- name: Configure | Tune timescaledb
+  ansible.builtin.shell: timescaledb-tune --yes && touch /timescaledb-tune-finished
+  args:
+    creates: /timescaledb-tune-finished
+
+- name: Configure | Migrate previous home
+  ansible.builtin.shell: |
+    cp -r /var/lib/postgresql/14/main "{{- postgresql_external_data_directory -}}/";
+    chown -R postgres:postgres "{{- postgresql_external_data_directory -}}/main";
+    touch "{{- postgresql_external_data_directory -}}/.migrated";
+  args:
+    creates: "{{- postgresql_external_data_directory -}}/.migrated"
+  notify: "Restart postgresql"
+  when: postgresql_external_data_directory != ''

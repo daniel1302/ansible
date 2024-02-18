@@ -16,9 +16,4 @@
     owner: postgres
     group: postgres
     mode: '0644'
-
-- name: Restart postgresql
-  ansible.builtin.service:
-    state: restarted
-    enabled: true
-    name: postgresql
+  notify: "Restart postgresql"

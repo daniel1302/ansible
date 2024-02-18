@@ -6,7 +6,7 @@
     name: "{{ item }}"
     port: "5432"
   register: create_db
-  with_items: "{{ db_users }}"
+  with_items: "{{ postgresql_db_users }}"
 
 - name: Config PostgreSQL | Ensure user has access to the new database
   become: true
@@ -18,4 +18,4 @@
     password: "{{ item }}"
     priv: ALL
     state: present
-  with_items: "{{ db_users }}"
+  with_items: "{{ postgresql_db_users }}"
