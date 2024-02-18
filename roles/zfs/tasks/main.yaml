@@ -1,0 +1,31 @@
+---
+- name: ZFS | Install required software
+  ansible.builtin.apt:
+    pkg:
+      - zfsutils-linux
+
+- name: ZFS | Ensure mountpoint exists
+  ansible.builtin.file:
+    path: "{{- zfs_mount_point }}"
+    state: "directory"
+    mode: '0755'
+      
+- name: ZFS | Validate data
+  ansible.builtin.fail:
+    msg: Missing parameters for ZFS module
+  when: zfs_pool_name == "" or zfs_device == "" or zfs_mount_point == ""
+
+- name: ZFS | Create 
+  ansible.builtin.shell: |
+    zpool create -o ashift=12 "{{- zfs_pool_name -}}" "{{- zfs_device -}}";
+    zfs set atime=off "{{- zfs_pool_name -}}";
+    zfs set recordsize=128k "{{- zfs_pool_name -}}";
+    zfs set compression=lz4 "{{- zfs_pool_name -}}";
+    # enable improved extended attributes - keep in inode instead of dir;
+    zfs set xattr=sa "{{- zfs_pool_name -}}";
+    # reduce amount of metadata (may improve random writes);
+    zfs set redundant_metadata=most "{{- zfs_pool_name -}}";
+    zfs set mountpoint="{{- zfs_mount_point }}" "{{- zfs_pool_name -}}";
+    touch "/.zfs_{{- zfs_pool_name -}}"
+  args:
+    creates: "/.zfs_{{- zfs_pool_name -}}"
