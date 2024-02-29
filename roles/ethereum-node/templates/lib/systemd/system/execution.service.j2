@@ -9,13 +9,16 @@ Group=ethereum
 ExecStart=/home/ethereum/ethereum/execution/erigon \
                   --chain={{- ethereum_chain_name }} \
                   --http \
+                  --http.addr 0.0.0.0 \
+                  --http.vhosts="*" \
+                  --http.corsdomain="*" \
                   --http.api=eth,debug,net,trace,web3,erigon \
                   --ws \
                   --metrics \
                   --metrics.addr=0.0.0.0 \
                   --torrent.download.rate=100m \
                   --datadir=/home/ethereum/ethereum/execution/data \
-                  --authrpc.jwtsecret=/home/ethereum/ethereum/jwtsecret/jwt.hex \
+                  --authrpc.jwtsecret=/home/ethereum/ethereum/jwtsecret/jwt.hex {{ ethereum_erigon_extra_args }}
 
 TimeoutStopSec=120s
 LimitNOFILE=1048576

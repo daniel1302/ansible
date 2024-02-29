@@ -16,7 +16,7 @@ ExecStart=/home/ethereum/ethereum/consensus/lighthouse beacon_node \
       --http-port=4000 \
       --execution-endpoint=http://localhost:8551 \
       --execution-jwt=/home/ethereum/ethereum/jwtsecret/jwt.hex \
-      --checkpoint-sync-url {{ ethereum_lighthouse_checkpoint_url }} {{ ethereum_additional_lighthouse_params }}
+      --checkpoint-sync-url {{ ethereum_lighthouse_checkpoint_url }} {{ ethereum_lighthouse_extra_params }}
 
 TimeoutStopSec=120s
 LimitNOFILE=1048576
