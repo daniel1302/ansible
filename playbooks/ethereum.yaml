@@ -3,5 +3,6 @@
   become: true
   roles:
     - role: common
+    - role: zfs
     - role: ethereum-node
     - role: grafana-agent
