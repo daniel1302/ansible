@@ -13,6 +13,7 @@
       - nfs-common
       - unzip
       - gzip
+      - qemu-guest-agent
 
 - name: Ensure users can access sudo w/o pass
   ansible.builtin.lineinfile:

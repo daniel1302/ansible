@@ -13,3 +13,6 @@
 
 - name: Setup Dasel
   ansible.builtin.import_tasks: dasel.yaml
+
+- name: Setup qemu-guest-agent
+  ansible.builtin.import_tasks: qemu-agent.yaml

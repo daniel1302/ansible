@@ -1,5 +1,7 @@
 extra_hosts: []
 
+common_with_qemu: false
+
 extra_accounts:
   daniel:
     authorized_keys: |
