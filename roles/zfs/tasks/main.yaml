@@ -1,10 +1,12 @@
 ---
 - name: ZFS | Install required software
+  when: zfs_device != ""
   ansible.builtin.apt:
     pkg:
       - zfsutils-linux
 
 - name: ZFS | Ensure mountpoint exists
+  when: zfs_device != ""
   ansible.builtin.file:
     path: "{{- zfs_mount_point }}"
     state: "directory"
@@ -13,9 +15,10 @@
 - name: ZFS | Validate data
   ansible.builtin.fail:
     msg: Missing parameters for ZFS module
-  when: zfs_pool_name == "" or zfs_device == "" or zfs_mount_point == ""
+  when: zfs_device != "" and (zfs_pool_name == "" or zfs_mount_point == "")
 
 - name: ZFS | Create 
+  when: zfs_device != ""
   ansible.builtin.shell: |
     zpool create -o ashift=12 "{{- zfs_pool_name -}}" "{{- zfs_device -}}";
     zfs set atime=off "{{- zfs_pool_name -}}";
