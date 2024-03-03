@@ -24,7 +24,9 @@ postgresql:
 ethereum:
   hosts:
     gnosis1.local.mainnet.community:
-      ethereum_mount_disk: "/dev/sdb"
+      ethereum_consensus_client: "lighthouse"
+      ethereum_execution_client: "erigon"
+      ethereum_external_folder: "/mnt/ethereum"
       ethereum_erigon_version: "2.58.0" # https://github.com/ledgerwatch/erigon/releases/tag/v2.58.1
       ethereum_lighthouse_version: "5.0.0"
       ethereum_chain_name: "gnosis"
@@ -33,7 +35,9 @@ ethereum:
       zfs_device: "/dev/sdb"
       zfs_mount_point: "/mnt/ethereum"
     gnosis2.local.mainnet.community:
-      ethereum_mount_disk: "/dev/sdb"
+      ethereum_consensus_client: "lighthouse"
+      ethereum_execution_client: "erigon"
+      ethereum_external_folder: "/mnt/ethereum"
       ethereum_erigon_version: "2.58.1"
       ethereum_lighthouse_version: "5.0.0"
       ethereum_chain_name: "gnosis"
@@ -42,24 +46,32 @@ ethereum:
       zfs_device: "/dev/sdb"
       zfs_mount_point: "/mnt/ethereum"
     sepolia1.local.mainnet.community:
+      ethereum_consensus_client: "lighthouse"
+      ethereum_execution_client: "erigon"
       ethereum_mount_disk: "/dev/sdb"
       ethereum_erigon_version: "2.58.1"
       ethereum_lighthouse_version: "5.0.0"
       ethereum_chain_name: "sepolia"
       ethereum_lighthouse_checkpoint_url: "https://beaconstate-sepolia.chainsafe.io"
     sepolia2.local.mainnet.community:
+      ethereum_consensus_client: "lighthouse"
+      ethereum_execution_client: "erigon"
       ethereum_external_folder: "/mnt/ethereum"
       ethereum_erigon_version: "2.58.1"
       ethereum_lighthouse_version: "5.0.0"
       ethereum_chain_name: "sepolia"
       ethereum_lighthouse_checkpoint_url: "https://beaconstate-sepolia.chainsafe.io"
     ethereum1.local.mainnet.community:
+      ethereum_consensus_client: "lighthouse"
+      ethereum_execution_client: "erigon"
       ethereum_external_folder: "/mnt/ethereum"
       ethereum_erigon_version: "2.58.1"
       ethereum_lighthouse_version: "5.0.0"
       ethereum_chain_name: "mainnet"
       ethereum_lighthouse_checkpoint_url: "https://sync-mainnet.beaconcha.in"
     ethereum-full1.local.mainnet.community:
+      ethereum_consensus_client: "lighthouse"
+      ethereum_execution_client: "erigon"
       ethereum_external_folder: "/mnt/ethereum"
       ethereum_erigon_version: "2.58.1"
       ethereum_lighthouse_version: "5.0.0"
@@ -69,5 +81,29 @@ ethereum:
       zfs_pool_name: "ethereum_pool"
       zfs_device: "/dev/sdb"
       zfs_mount_point: "/mnt/ethereum"
+    ethereum-full2.local.mainnet.community:
+      ethereum_consensus_client: "lighthouse"
+      ethereum_execution_client: "nethermind"
+      ethereum_external_folder: "/mnt/ethereum"
+      ethereum_nethermind_version: "1.25.4-20b10b35"
+      ethereum_lighthouse_version: "5.0.0"
+      ethereum_chain_name: "mainnet"
+      ethereum_lighthouse_checkpoint_url: "https://sync-mainnet.beaconcha.in"
+      zfs_pool_name: "ethereum_pool"
+      zfs_device: "/dev/sdb"
+      zfs_mount_point: "/mnt/ethereum"
+      ethereum_archival_node: false
+    gnosis3.local.mainnet.community:
+      ethereum_consensus_client: "lighthouse"
+      ethereum_execution_client: "nethermind"
+      ethereum_external_folder: "/mnt/ethereum"
+      ethereum_nethermind_version: "1.25.4-20b10b35"
+      ethereum_lighthouse_version: "5.0.0"
+      ethereum_chain_name: "gnosis"
+      ethereum_lighthouse_checkpoint_url: "https://checkpoint.gnosischain.com"
+      zfs_pool_name: "ethereum_pool"
+      zfs_device: "/dev/sdb"
+      zfs_mount_point: "/mnt/ethereum"
+      ethereum_archival_node: false
   vars: 
     common_with_qemu: true
