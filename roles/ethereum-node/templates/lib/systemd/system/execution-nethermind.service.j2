@@ -1,0 +1,55 @@
+[Unit]
+Description=execution engine
+After=network.target network-online.target
+Requires=network-online.target
+
+[Service]
+User=ethereum
+Group=ethereum
+ExecStart=/home/ethereum/ethereum/execution/nethermind \
+                {% if ethereum_archival_node -%}
+                --Sync.DownloadBodiesInFastSync=false \
+                --Sync.DownloadReceiptsInFastSync=false \
+                --Sync.FastSync=false \
+                --Sync.SnapSync=false \
+                --Sync.FastBlocks=false \
+                --Pruning.Mode=None \
+                --Sync.PivotNumber=0 \
+                {% else -%}
+                --Pruning.Mode Hybrid \
+                --Pruning.FullPruningMaxDegreeOfParallelism=0 \
+                --Pruning.FullPruningTrigger=VolumeFreeSpace \
+                --Pruning.FullPruningThresholdMb 128000 \
+                --Pruning.FullPruningMemoryBudgetMb=16384 \
+                {% endif -%}
+                --datadir=/home/ethereum/ethereum/execution/data \
+                --config {{ ethereum_chain_name }} \
+                --JsonRpc.EnabledModules Web3,Eth,Subscribe,Net,Health,Parity,Proof,Trace,TxPool \
+                --Init.WebSocketsEnabled true \
+                --Network.DiscoveryPort 30303 \
+                --Network.P2PPort 30303 \
+                --Network.MaxActivePeers 50 \
+                --HealthChecks.Enabled true \
+                --HealthChecks.UIEnabled true \
+                --JsonRpc.Enabled true \
+                --JsonRpc.Host 0.0.0.0 \
+                --JsonRpc.Port 8545 \
+                --JsonRpc.EngineHost 0.0.0.0 \
+                --JsonRpc.EnginePort 8551 \
+                --JsonRpc.AdditionalRpcUrls="http://127.0.0.1:1337|http|admin" \
+                --JsonRpc.JwtSecretFile="/home/ethereum/ethereum/jwtsecret/jwt.hex" \
+                --Metrics.Enabled true \
+                --Metrics.ExposeHost 0.0.0.0 \
+                --Metrics.ExposePort 6060 \
+                --Pruning.FullPruningCompletionBehavior AlwaysShutdown \
+                --log info {{ ethereum_nethermind_extra_args }}
+
+TimeoutStopSec=120s
+LimitNOFILE=1048576
+LimitNPROC=512
+PrivateTmp=false
+ProtectSystem=full
+AmbientCapabilities=CAP_NET_BIND_SERVICE
+
+[Install]
+WantedBy=multi-user.target

@@ -1,8 +1,17 @@
 ethereum_mount_disk: ""
-ethereum_erigon_version: "2.57.3"
-ethereum_lighthouse_version: "4.6.0"
 ethereum_chain_name: "sepolia"
 ethereum_external_folder: ""
+ethereum_archival_node: true
+
+ethereum_consensus_client: "lighthouse"
+ethereum_execution_client: "erigon"
+
+ethereum_erigon_version: "2.57.3"
 ethereum_erigon_extra_args: ""
+
+ethereum_lighthouse_version: "4.6.0"
 ethereum_lighthouse_extra_params: ""
 ethereum_lighthouse_checkpoint_url: ""
+
+ethereum_nethermind_version: "1.25.4-20b10b35"
+ethereum_nethermind_extra_args: ""

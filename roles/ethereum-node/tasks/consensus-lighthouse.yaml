@@ -1,0 +1,37 @@
+---
+- name: Download lighthouse
+  ansible.builtin.get_url:
+    url: "https://github.com/sigp/lighthouse/releases/download/v{{- ethereum_lighthouse_version -}}/lighthouse-v{{- ethereum_lighthouse_version -}}-x86_64-unknown-linux-gnu-portable.tar.gz"
+    dest: &lighthousedest /tmp/lighthouse.tar.gz
+    mode: '0600'
+
+- name: Unpack lighthouse
+  ansible.builtin.unarchive:
+    src: *lighthousedest
+    remote_src: true
+    dest: /tmp
+
+- name: Copy lighthouse binary
+  ansible.builtin.copy:
+    remote_src: true
+    src: "/tmp/lighthouse"
+    dest: /home/ethereum/ethereum/consensus/
+    owner: ethereum
+    group: ethereum
+    mode: '0755'
+
+- name: Copy service files
+  ansible.builtin.template:
+    src: "lib/systemd/system/consensus-lighthouse.service.j2"
+    dest: "/lib/systemd/system/consensus.service"
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Start consensus
+  ansible.builtin.systemd:
+    name: consensus
+    state: started
+    enabled: true
+    daemon_reload: true
+  when: not ansible_check_mode

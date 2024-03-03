@@ -2,8 +2,20 @@
 - name: Configure system
   ansible.builtin.import_tasks: system.yaml
 
-- name: Install binaries
-  ansible.builtin.import_tasks: binaries.yaml
+# - name: Install binaries
+#   ansible.builtin.import_tasks: binaries.yaml
 
-- name: Configure systemd
-  ansible.builtin.import_tasks: systemd.yaml
+# - name: Configure systemd
+#   ansible.builtin.import_tasks: systemd.yaml
+
+- name: "Consensus: lighthouse"
+  ansible.builtin.import_tasks: consensus-lighthouse.yaml
+  when: ethereum_consensus_client == "lighthouse"
+
+- name: "Execution: erigon"
+  ansible.builtin.import_tasks: execution-erigon.yaml
+  when: ethereum_execution_client == "erigon"
+
+- name: "Execution: nethermind"
+  ansible.builtin.import_tasks: execution-nethermind.yaml
+  when: ethereum_execution_client == "nethermind"
