@@ -1,0 +1,53 @@
+---
+# https://github.com/0xJacky/nginx-ui/releases/download/v2.0.0-beta.18-patch.2/nginx-ui-linux-64.tar.gz
+- name: Download nginx-ui binary
+  ansible.builtin.get_url: 
+    url: "https://github.com/0xJacky/nginx-ui/releases/download/v{{- nginx_ui_version -}}/nginx-ui-linux-64.tar.gz"
+    dest: &nginxuidest /tmp/nginxui.tar.gz
+    mode: '0600'
+
+- name: Unpack nginx-ui
+  ansible.builtin.unarchive:
+    src: *nginxuidest
+    remote_src: true
+    dest: /tmp
+
+- name: Copy nginx-ui binary
+  ansible.builtin.copy:
+    remote_src: true
+    src: "/tmp/nginx-ui"
+    dest: /usr/local/bin/nginx-ui
+    owner: root
+    group: root
+    mode: '0755'
+
+- name: Create config dir
+  ansible.builtin.file:
+    path: /etc/nginx-ui
+    state: directory
+    owner: root
+    group: root
+
+- name: Copy config file
+  ansible.builtin.template:
+    src: "etc/nginx-ui/config.ini.j2"
+    dest: "/etc/nginx-ui/config.ini"
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Copy service files
+  ansible.builtin.template:
+    src: "lib/systemd/system/nginx-ui.service.j2"
+    dest: "/lib/systemd/system/nginx-ui.service"
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Start nginx-ui
+  ansible.builtin.systemd:
+    name: nginx-ui
+    state: started
+    enabled: true
+    daemon_reload: true
+  when: not ansible_check_mode
