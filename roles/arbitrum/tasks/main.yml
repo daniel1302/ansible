@@ -1,0 +1,6 @@
+---
+- name: Configure system
+  ansible.builtin.import_tasks: system.yaml
+
+- name: Configure systemd
+  ansible.builtin.import_tasks: arbitrum-service.yaml

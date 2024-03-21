@@ -1,0 +1,24 @@
+---
+- name: Add the 'arbitrum' user
+  ansible.builtin.group:
+    name: arbitrum
+    state: present
+
+- name: Add the 'docker' user
+  ansible.builtin.group:
+    name: docker
+    state: present
+
+- name: Add the 'arbitrum' user
+  ansible.builtin.user:
+    name: arbitrum
+    shell: /bin/bash
+    groups: arbitrum, sudo, docker
+
+- name: Create directory for the arbitrum
+  ansible.builtin.file:
+    path: "/mnt/arbitrum/arbitrum_data"
+    state: directory
+    mode: '0777'
+    owner: arbitrum
+    group: arbitrum

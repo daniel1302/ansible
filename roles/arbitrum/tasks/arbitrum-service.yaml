@@ -1,0 +1,17 @@
+---
+
+- name: Copy service files
+  ansible.builtin.template:
+    src: "lib/systemd/system/arbitrum.service.j2"
+    dest: "/lib/systemd/system/arbitrum.service"
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Start arbitrum
+  ansible.builtin.systemd:
+    name: arbitrum
+    state: started
+    enabled: true
+    daemon_reload: true
+  when: not ansible_check_mode
