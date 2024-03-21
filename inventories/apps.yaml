@@ -20,6 +20,42 @@ postgresql:
       postgresql_external_data_directory: "/mnt/postgresql"
       postgresql_db_users:
         - vega
+    postgresql4.local.mainnet.community:
+      zfs_device: "/dev/sdb"
+      zfs_pool_name: "postgresql_pool"
+      zfs_mount_point: "/mnt/postgresql"
+      postgresql_external_data_directory: "/mnt/postgresql"
+      postgresql_db_users:
+        - vega
+
+vega-data-node:
+  hosts:
+    data-node.local.mainnet.community:
+      grafana_agent_scrape_vega: true
+    data-node2.local.mainnet.community:
+      grafana_agent_scrape_vega: true
+    data-node3.local.mainnet.community:
+      grafana_agent_scrape_vega: true
+    data-node4.local.mainnet.community:
+      grafana_agent_scrape_vega: true
+      zfs_pool_name: "vega_pool"
+      zfs_device: "/dev/sdb"
+      zfs_mount_point: "/mnt/vega"
+
+arbitrum:
+  hosts:
+    arbitrum-sepolia1.local.mainnet.community:
+      zfs_pool_name: "arbitrum_pool"
+      zfs_device: "/dev/sdb"
+      zfs_mount_point: "/mnt/arbitrum"
+      arbitrum_l1_connection_url: http://sepolia1.local.mainnet.community:8545
+      arbitrum_l1_beacon_url: http://sepolia1.local.mainnet.community:4000
+    arbitrum-sepolia2.local.mainnet.community:
+      zfs_pool_name: "arbitrum_pool"
+      zfs_device: "/dev/sdb"
+      zfs_mount_point: "/mnt/arbitrum"
+      arbitrum_l1_connection_url: http://sepolia2.local.mainnet.community:8545
+      arbitrum_l1_beacon_url: http://sepolia2.local.mainnet.community:4000
 
 ethereum:
   hosts:
@@ -34,6 +70,7 @@ ethereum:
       zfs_pool_name: "ethereum_pool"
       zfs_device: "/dev/sdb"
       zfs_mount_point: "/mnt/ethereum"
+      grafana_agent_scrape_ethereum: true
     gnosis2.local.mainnet.community:
       ethereum_consensus_client: "lighthouse"
       ethereum_execution_client: "erigon"
@@ -45,6 +82,7 @@ ethereum:
       zfs_pool_name: "ethereum_pool"
       zfs_device: "/dev/sdb"
       zfs_mount_point: "/mnt/ethereum"
+      grafana_agent_scrape_ethereum: true
     sepolia1.local.mainnet.community:
       ethereum_consensus_client: "lighthouse"
       ethereum_execution_client: "erigon"
@@ -53,6 +91,7 @@ ethereum:
       ethereum_lighthouse_version: "5.0.0"
       ethereum_chain_name: "sepolia"
       ethereum_lighthouse_checkpoint_url: "https://beaconstate-sepolia.chainsafe.io"
+      grafana_agent_scrape_ethereum: true
     sepolia2.local.mainnet.community:
       ethereum_consensus_client: "lighthouse"
       ethereum_execution_client: "erigon"
@@ -61,6 +100,7 @@ ethereum:
       ethereum_lighthouse_version: "5.0.0"
       ethereum_chain_name: "sepolia"
       ethereum_lighthouse_checkpoint_url: "https://beaconstate-sepolia.chainsafe.io"
+      grafana_agent_scrape_ethereum: true
     ethereum1.local.mainnet.community:
       ethereum_consensus_client: "lighthouse"
       ethereum_execution_client: "erigon"
@@ -69,6 +109,7 @@ ethereum:
       ethereum_lighthouse_version: "5.0.0"
       ethereum_chain_name: "mainnet"
       ethereum_lighthouse_checkpoint_url: "https://sync-mainnet.beaconcha.in"
+      grafana_agent_scrape_ethereum: true
     ethereum-full1.local.mainnet.community:
       ethereum_consensus_client: "lighthouse"
       ethereum_execution_client: "erigon"
@@ -81,6 +122,7 @@ ethereum:
       zfs_pool_name: "ethereum_pool"
       zfs_device: "/dev/sdb"
       zfs_mount_point: "/mnt/ethereum"
+      grafana_agent_scrape_ethereum: true
     ethereum-full2.local.mainnet.community:
       ethereum_consensus_client: "lighthouse"
       ethereum_execution_client: "nethermind"
@@ -93,6 +135,7 @@ ethereum:
       zfs_device: "/dev/sdb"
       zfs_mount_point: "/mnt/ethereum"
       ethereum_archival_node: false
+      grafana_agent_scrape_ethereum: true
     gnosis3.local.mainnet.community:
       ethereum_consensus_client: "lighthouse"
       ethereum_execution_client: "nethermind"
@@ -105,5 +148,33 @@ ethereum:
       zfs_device: "/dev/sdb"
       zfs_mount_point: "/mnt/ethereum"
       ethereum_archival_node: false
+      grafana_agent_scrape_ethereum: true
+    ethereum2.local.mainnet.community:
+      ethereum_consensus_client: "lighthouse"
+      ethereum_execution_client: "erigon"
+      ethereum_external_folder: "/mnt/ethereum"
+      ethereum_erigon_version: "2.58.1"
+      ethereum_lighthouse_version: "5.0.0"
+      ethereum_chain_name: "mainnet"
+      ethereum_lighthouse_checkpoint_url: "https://sync-mainnet.beaconcha.in"
+      grafana_agent_scrape_ethereum: true
+      zfs_pool_name: "ethereum_pool"
+      zfs_device: "/dev/sdb"
+      zfs_mount_point: "/mnt/ethereum"
   vars: 
     common_with_qemu: true
+
+front-proxy:
+  hosts:
+    front-proxy.local.mainnet.community:
+  vars:
+    grafana_agent_with_nginx_exporter: true
+    grafana_agent_nginx_exporter_version: 1.1.0
+
+    grafana_agent_with_nginxlog_exporter: true
+    grafana_agent_nginxlog_exporter_version: 1.11.0
+    grafana_agent_nginxlog_applications_config: 
+      - name: nginxlog_exporter
+        accesslog_files:
+          - /var/log/nginx/nginxlog.access.log
+

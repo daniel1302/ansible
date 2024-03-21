@@ -1,0 +1,7 @@
+- name: Run playbooks for ethereum
+  hosts: front-proxy
+  become: true
+  roles:
+    - role: common
+    - role: grafana-agent
+    - role: nginx-ui

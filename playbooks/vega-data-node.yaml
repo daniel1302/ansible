@@ -1,8 +1,7 @@
-- name: Run playbooks for postgresql
-  hosts: postgresql
+- name: Run playbooks for vega data node
+  hosts: vega-data-node
   become: true
   roles:
     - role: common
     - role: zfs
-    - role: postgresql
     - role: grafana-agent
