@@ -1,0 +1,35 @@
+listen {
+  port = 4040
+  address = "0.0.0.0"
+  metrics_endpoint = "/metrics"
+}
+
+{% for app_conf in grafana_agent_nginxlog_applications_config %}
+namespace "{{- app_conf.name -}}" {
+  format = "$remote_addr - $remote_user [$time_local] [$upstream_response_time] \"$host\" \"$request\" $status $body_bytes_sent \"$http_referer\" \"$http_user_agent\" \"$http_x_forwarded_for\""
+  source {
+    files = [
+      {% for file_path in app_conf.accesslog_files %}
+        "{{- file_path -}}"
+      {% endfor %}
+    ]
+  }
+
+  namespace_label = "app_name"
+  relabel "vhost" { from = "host" }
+
+  # log can be printed to std out, e.g. for debugging purposes (disabled by default)
+  print_log = false
+
+  # metrics_override = { prefix = "myprefix" }
+  # namespace_label = "vhost"
+
+//   labels {
+//     app = "application-one"
+//     environment = "production"
+//     foo = "bar"
+//   }
+
+  histogram_buckets = [.005, .01, .025, .05, .1, .25, .5, 1, 2.5, 5, 10]
+}
+{% endfor %}

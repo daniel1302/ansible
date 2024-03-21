@@ -3,3 +3,13 @@ grafana_agent_config_file: grafana-agent-common.yaml
 grafana_agent_extra_custom_args: []
 grafana_agent_with_smartmonitor: false
 
+
+grafana_agent_scrape_ethereum: false
+grafana_agent_scrape_vega: false
+
+grafana_agent_with_nginx_exporter: false
+grafana_agent_nginx_exporter_version: 1.1.0
+
+grafana_agent_with_nginxlog_exporter: false
+grafana_agent_nginxlog_exporter_version: 1.11.0
+grafana_agent_nginxlog_applications_config: {}

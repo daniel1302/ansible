@@ -1,0 +1,38 @@
+
+---
+- name: Download nginx-exporter
+  ansible.builtin.get_url:
+    url: "https://github.com/nginxinc/nginx-prometheus-exporter/releases/download/v{{- grafana_agent_nginx_exporter_version -}}/nginx-prometheus-exporter_{{- grafana_agent_nginx_exporter_version -}}_linux_amd64.tar.gz"
+    dest: &nginx_exporterdesc /tmp/nginx_exporter.tar.gz
+    mode: '0600'
+
+- name: Unpack nginx-exporter
+  ansible.builtin.unarchive:
+    src: *nginx_exporterdesc
+    remote_src: true
+    dest: /tmp
+
+- name: Copy nginx-exporter binary
+  ansible.builtin.copy:
+    remote_src: true
+    src: "/tmp/nginx-prometheus-exporter"
+    dest: /usr/local/bin/nginx-prometheus-exporter
+    owner: root
+    group: root
+    mode: '0755'
+
+- name: Copy service files
+  ansible.builtin.template:
+    src: "lib/systemd/system/nginx-exporter.j2"
+    dest: "/lib/systemd/system/nginx-exporter.service"
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Start execution
+  ansible.builtin.systemd:
+    name: nginx-exporter
+    state: started
+    enabled: true
+    daemon_reload: true
+  when: not ansible_check_mode

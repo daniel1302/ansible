@@ -18,6 +18,7 @@ metrics:
   configs:
     - name: agent
       scrape_configs:
+{% if grafana_agent_scrape_ethereum %}
         - job_name: consensus
           scrape_interval: 15s
           metrics_path: '/metrics'
@@ -28,7 +29,33 @@ metrics:
           metrics_path: '/debug/metrics/prometheus'
           static_configs:
             - targets: ['127.0.0.1:6060']
-
+{% endif %}
+{% if grafana_agent_scrape_vega %}
+        - job_name: vega
+          scrape_interval: 15s
+          metrics_path: '/metrics'
+          static_configs:
+            - targets: ['127.0.0.1:2112']
+        - job_name: data-node
+          scrape_interval: 15s
+          metrics_path: '/metrics'
+          static_configs:
+            - targets: ['127.0.0.1:2113']
+{% endif %}
+{% if grafana_agent_with_nginx_exporter %}
+        - job_name: nginx_exporter
+          scrape_interval: 15s
+          metrics_path: '/metrics'
+          static_configs:
+            - targets: ['127.0.0.1:9113']
+{% endif %}
+{% if grafana_agent_with_nginxlog_exporter %}
+        - job_name: nginxlog_exporter
+          scrape_interval: 15s
+          metrics_path: '/metrics'
+          static_configs:
+            - targets: ['127.0.0.1:4040']
+{% endif %}
     # Example Prometheus scrape configuration to scrape the agent itself for metrics.
     # This is not needed if the agent integration is enabled.
     # - name: agent

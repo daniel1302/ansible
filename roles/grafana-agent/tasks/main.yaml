@@ -2,6 +2,14 @@
 - name: Common
   ansible.builtin.import_tasks: common.yaml
 
+- name: Setup nginx exporter
+  ansible.builtin.import_tasks: nginx-exporter.yaml
+  when: grafana_agent_with_nginx_exporter
+
+- name: Setup nginxlog exporter
+  ansible.builtin.import_tasks: nginxlog-exporter.yaml
+  when: grafana_agent_with_nginxlog_exporter
+
 - name: Setup grafana-agent
   ansible.builtin.import_tasks: grafana-agent.yaml
 
